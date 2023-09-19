@@ -1,4 +1,4 @@
-.login-container {
+.register-container {
     width: 300px;
     margin: 0 auto;
     padding: 20px;
@@ -8,13 +8,13 @@
     background-color: #fff;
   }
   
-  .login-title {
+  .register-title {
     font-size: 24px;
     text-align: center;
     margin-bottom: 20px;
   }
   
-  .login-input {
+  .register-input {
     width: 100%;
     margin-bottom: 10px;
     border: 1px solid #ccc;
@@ -25,8 +25,8 @@
  
   }
   
-  .login-button, .register-button {
-    display:flexbox;
+  .register-button {
+    display:flex;
     width: 100%;
     padding: 10px;
     background-color: #007bff;
@@ -36,6 +36,6 @@
     cursor: pointer;
   }
   
-  .login-button:hover {
+  .register-button:hover {
     background-color: #0056b3;
   }

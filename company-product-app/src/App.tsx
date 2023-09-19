@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
 import Login from './Pages/Login/Login';
+import Register from './Pages/Register/Register';
 
 interface AppProps{
   name:string;
@@ -8,7 +9,8 @@ interface AppProps{
 
 function App(props:AppProps) {
   return (
-    <Login></Login>
+     <Register></Register>
+    //<Login></Login>
   );
 }
 

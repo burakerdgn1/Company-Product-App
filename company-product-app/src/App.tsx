@@ -2,6 +2,7 @@ import './App.css';
 import React from 'react';
 import Login from './Pages/Login/Login';
 import Register from './Pages/Register/Register';
+import Companies from './Pages/Companies/Companies';
 
 interface AppProps{
   name:string;
@@ -9,8 +10,9 @@ interface AppProps{
 
 function App(props:AppProps) {
   return (
-     <Register></Register>
+     //<Register></Register>
     //<Login></Login>
+    <Companies></Companies>
   );
 }
 

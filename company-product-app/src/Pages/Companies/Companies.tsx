@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Table, Button, Input, Form, Space, Modal } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined ,SearchOutlined,ExclamationCircleOutlined} from '@ant-design/icons';
 
 const { Column } = Table;
 const { Search } = Input;
 const { confirm } = Modal;
+
 
 //dummy data
 const dummyCompanies = [
@@ -25,11 +26,118 @@ const dummyCompanies = [
 ];
 
 function Companies() {
-    const [companies, setCompanies] = useState(dummyCompanies);
+    interface Company {
+        key: string;
+        companyName: string;
+        legalNumber: string;
+        country: string;
+        website: string;
+      }
+    
+
+    const [companies, setCompanies] = useState<Company[]>(dummyCompanies);
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [form] = Form.useForm();
 
+    const handleAddCompany = (values:any) => {
+        const newCompany = {
+          key: (companies.length + 1).toString(), // Generate a unique key
+          ...values,
+        };
+        setCompanies([...companies, newCompany]);
+        form.resetFields();
+      };
+
+      const [editingCompany, setEditingCompany] = useState<Company|null>(null);
+
+      const handleEditCompany = (values:any) => {
+        if(editingCompany){
+            const updatedCompanies = companies.map((company) =>
+          company.key === editingCompany.key ? { ...company, ...values } : company
+        );
+        setCompanies(updatedCompanies);
+        setEditingCompany(null);
+        form.resetFields();
+
+        }
+        
+      };
+
+      const showDeleteConfirm = (record:Company) => {
+        confirm({
+          title: 'Are you sure you want to delete this company?',
+          icon: <ExclamationCircleOutlined />,
+          okText: 'Yes',
+          okType: 'danger',
+          cancelText: 'No',
+          onOk() {
+            handleDeleteCompany(record.key);
+          },
+          onCancel() {
+            console.log('Cancel');
+          },
+        });
+      };
+
+      const handleDeleteCompany = (key:string) => {
+        const updatedCompanies = companies.filter((company) => company.key !== key);
+        setCompanies(updatedCompanies);
+      };
+
+      const handleSearch = (selectedKeys:string[]|null, confirm:(()=>void)|null, dataIndex:string) => {
+        if(confirm){
+            confirm();
+        }
+        setSearchText(selectedKeys?selectedKeys[0]:'');
+        setSearchedColumn(dataIndex);
+      };
+
+      const handleReset = (clearFilters:()=>void) => {
+        clearFilters();
+        setSearchText('');
+      };
+
+      const getColumnSearchProps = (dataIndex:string) => ({
+        filterDropdown: ( setSelectedKeys:(selectedKeys:string[])=>{}, selectedKeys:string[], confirm:()=>{}, clearFilters:()=>{} ) => (
+          <div style={{ padding: 8 }}>
+            <Input
+              placeholder={`Search ${dataIndex}`}
+              value={selectedKeys[0]}
+              onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+              onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              style={{ width: 188, marginBottom: 8, display: 'block' }}
+            />
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                icon={<SearchOutlined />}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Search
+              </Button>
+              <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+                Reset
+              </Button>
+            </Space>
+          </div>
+        ),
+        filterIcon: (filtered:boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+        onFilter: (value:string, record:Company) =>
+          record[dataIndex as keyof Company] ? record[dataIndex as keyof Company].toString().toLowerCase().includes(value.toLowerCase()) : '',
+        render: (text:string) =>
+          searchedColumn === dataIndex ? (
+            <Button type="link" onClick={() => handleSearch(null, null, dataIndex)}>
+              {text}
+            </Button>
+          ) : (
+            text
+          ),
+      });
+
+      const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)?([\w-]+\/?)*\??([\w-]+=[\w-]*(\&[\w-]+=[\w-]*)*)?$/;
 
 
     return (
@@ -47,8 +155,10 @@ function Companies() {
                 <Column
                     title="Company Name"
                     dataIndex="companyName"
+
+                    //check here
                     key="companyName"
-                    {...getColumnSearchProps('companyName')}
+                    //{...getColumnSearchProps('companyName')}
                 />
                 <Column title="Legal Number" dataIndex="legalNumber" key="legalNumber" />
                 <Column title="Incorporation Country" dataIndex="country" key="country" />
@@ -56,7 +166,7 @@ function Companies() {
                 <Column
                     title="Actions"
                     key="actions"
-                    render={(_, record) => (
+                    render={(_, record:Company) => (
                         <Space size="middle">
                             <Button
                                 type="primary"
@@ -66,7 +176,7 @@ function Companies() {
                                 Edit
                             </Button>
                             <Button
-                                type="danger"
+                                type="dashed"
                                 icon={<DeleteOutlined />}
                                 onClick={() => showDeleteConfirm(record)}
                             >
@@ -118,6 +228,8 @@ function Companies() {
                             <Input placeholder="Incorporation Country" />
                         </Form.Item>
 
+
+
                         <Form.Item
                             name="website"
                             label="Website"
@@ -128,6 +240,7 @@ function Companies() {
                                 },
                                 {
                                     type: 'url',
+                                    pattern:urlPattern,
                                     message: 'Please enter a valid URL',
                                 },
                             ]}
@@ -147,3 +260,5 @@ function Companies() {
         </div>
     );
 }
+
+export default Companies;

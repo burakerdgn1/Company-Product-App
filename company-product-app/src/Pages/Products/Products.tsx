@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Table, Button, Input, Form, Space, Modal, Select } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
@@ -6,38 +7,71 @@ const { Search } = Input;
 const { confirm } = Modal;
 const { Option } = Select;
 
-const dummyProducts = [
+export const dummyProducts = [
     {
         key: '1',
         productName: 'Product A',
-        productCategory: 'Category A',
+        productCategory: 'CategoryA',
         productAmount: 100,
         amountUnit: 'kg',
-        company: 'Company A',
+        company: 'A',
     },
     {
         key: '2',
         productName: 'Product B',
-        productCategory: 'Category B',
+        productCategory: 'CategoryB',
         productAmount: 50,
         amountUnit: 'pieces',
-        company: 'Company B',
+        company: 'B',
+    },
+    {
+        key: '3',
+        productName: 'Product C',
+        productCategory: 'CategoryC',
+        productAmount: 100,
+        amountUnit: 'kg',
+        company: 'C',
+    },
+    {
+        key: '4',
+        productName: 'Product D',
+        productCategory: 'CategoryD',
+        productAmount: 50,
+        amountUnit: 'pieces',
+        company: 'D',
+    },
+    {
+        key: '5',
+        productName: 'Product E',
+        productCategory: 'CategoryA',
+        productAmount: 100,
+        amountUnit: 'kg',
+        company: 'A',
+    },
+    {
+        key: '6',
+        productName: 'Product F',
+        productCategory: 'CategoryB',
+        productAmount: 50,
+        amountUnit: 'pieces',
+        company: 'B',
     },
 ];
+interface Product {
+    key: string;
+    productName: string;
+    productCategory: string;
+    productAmount: number;
+    amountUnit: string;
+    company: string;
+}
 
 
 
 function Products() {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-    interface Product {
-        key: string;
-        productName: string;
-        productCategory: string;
-        productAmount: number;
-        amountUnit: string;
-        company: string;
-    }
+    
 
 
 

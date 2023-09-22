@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import { Table, Button, Input, Form, Space, Modal } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
@@ -6,133 +7,86 @@ import { EditOutlined, DeleteOutlined, SearchOutlined, ExclamationCircleOutlined
 const { Column } = Table;
 const { Search } = Input;
 const { confirm } = Modal;
+interface Company {
+    key: string;
+    companyName: string;
+    legalNumber: string;
+    country: string;
+    website: string;
+}
 
 
 //dummy data
-const dummyCompanies = [
+export const dummyCompanies:Company[] = [
     {
         key: '1',
-        companyName: 'Company A',
+        companyName: 'A',
         legalNumber: '12345',
-        country: 'Country A',
+        country: 'CountryA',
         website: 'www.companya.com',
     },
     {
         key: '2',
-        companyName: 'Company B',
+        companyName: 'B',
         legalNumber: '67890',
-        country: 'Country B',
+        country: 'CountryB',
         website: 'www.companyb.com',
     },
     {
         key: '3',
-        companyName: 'Company A',
+        companyName: 'C',
         legalNumber: '12345',
-        country: 'Country A',
-        website: 'www.companya.com',
+        country: 'CountryC',
+        website: 'www.companyc.com',
     },
     {
         key: '4',
-        companyName: 'Company B',
+        companyName: 'D',
         legalNumber: '67890',
-        country: 'Country B',
+        country: 'CountryD',
         website: 'www.companyb.com',
     },
     {
         key: '5',
-        companyName: 'Company A',
+        companyName: 'E',
         legalNumber: '12345',
-        country: 'Country A',
+        country: 'CountryE',
         website: 'www.companya.com',
     },
     {
         key: '6',
-        companyName: 'Company B',
+        companyName: 'F',
         legalNumber: '67890',
-        country: 'Country B',
+        country: 'CountryA',
         website: 'www.companyb.com',
     },
     {
         key: '7',
-        companyName: 'Company A',
+        companyName: 'G',
         legalNumber: '12345',
-        country: 'Country A',
+        country: 'CountryA',
         website: 'www.companya.com',
     },
     {
         key: '8',
-        companyName: 'Company B',
+        companyName: 'H',
         legalNumber: '67890',
-        country: 'Country B',
+        country: 'CountryC',
         website: 'www.companyb.com',
     },
     {
         key: '9',
-        companyName: 'Company A',
+        companyName: 'I',
         legalNumber: '12345',
-        country: 'Country A',
+        country: 'CountryB',
         website: 'www.companya.com',
     },
-    {
-        key: '10',
-        companyName: 'Company B',
-        legalNumber: '67890',
-        country: 'Country B',
-        website: 'www.companyb.com',
-    },
-    {
-        key: '11',
-        companyName: 'Company A',
-        legalNumber: '12345',
-        country: 'Country A',
-        website: 'www.companya.com',
-    },
-    {
-        key: '12',
-        companyName: 'Company B',
-        legalNumber: '67890',
-        country: 'Country B',
-        website: 'www.companyb.com',
-    },
-    {
-        key: '13',
-        companyName: 'Company A',
-        legalNumber: '12345',
-        country: 'Country A',
-        website: 'www.companya.com',
-    },
-    {
-        key: '14',
-        companyName: 'Company B',
-        legalNumber: '67890',
-        country: 'Country B',
-        website: 'www.companyb.com',
-    },
-    {
-        key: '15',
-        companyName: 'Company A',
-        legalNumber: '12345',
-        country: 'Country A',
-        website: 'www.companya.com',
-    },
-    {
-        key: '16',
-        companyName: 'Company B',
-        legalNumber: '67890',
-        country: 'Country B',
-        website: 'www.companyb.com',
-    },
+    
+   
 ];
 
 function Companies() {
-    interface Company {
-        key: string;
-        companyName: string;
-        legalNumber: string;
-        country: string;
-        website: string;
-    }
-
+   
 
     const [companies, setCompanies] = useState<Company[]>(dummyCompanies);
     const [searchText, setSearchText] = useState<string>('');

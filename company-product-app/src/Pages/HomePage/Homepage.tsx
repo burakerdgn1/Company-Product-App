@@ -2,10 +2,13 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 import React from "react";
 import Company from '../Companies/Companies';
+import Companies from '../Companies/Companies';
 import Product from '../Products/Products';
+import Products from '../Products/Products';
 import { Card, Statistic, List } from "antd";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import { Link,Route,Routes} from "react-router-dom";
 
 
 interface Company {
@@ -100,10 +103,6 @@ function Homepage({ companies, products }: HomePageProps) {
     return (
         <div>
             <h1>Welcome to The Dashboard</h1>
-
-            
-
-
 
             <Card>
                 <Statistic title="Total Companies" value={totalCompanies} />

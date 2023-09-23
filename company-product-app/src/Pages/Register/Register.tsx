@@ -1,8 +1,11 @@
 import React, { useRef, useState } from 'react';
 import './Register.css'; 
 
+import { useNavigate } from 'react-router-dom';
+
 function Register() {
   const formRef = useRef<HTMLFormElement | null>(null);
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -21,8 +24,6 @@ function Register() {
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     
-    
-
     if (!formData.username || !formData.password || !formData.confirmPassword) {
       setErrorMessage('Please fill in all fields.');
       return;
@@ -42,14 +43,9 @@ function Register() {
       setErrorMessage('Passwords do not match.');
       return;
     }
-    //form is not resetted after submit, will be solved later
-    if(formRef.current){
-        formRef.current.reset();
-    }
-    console.log('Form Data After Reset:', formData);
 
-
-
+    navigate('/login');
+    
   };
 
   return (
@@ -83,6 +79,9 @@ function Register() {
         />
         <button type="submit" className="register-button">
           Register
+        </button>
+        <button type="button" className="login-button" onClick={()=>navigate('/login',{replace:true})}>
+          Login Page
         </button>
       </form>
     </div>

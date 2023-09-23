@@ -144,6 +144,7 @@ function Products() {
 
     return (
         <div>
+            <h1>Products</h1>
             <Button type="primary" icon={<PlusOutlined />} onClick={toggleAddProductForm}>
                 Add Product
             </Button>

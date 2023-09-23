@@ -234,7 +234,7 @@ function Companies() {
 
     return (
         <div>
-            <h2>Companies</h2>
+            <h1>Companies</h1>
             {/* <Space style={{ marginBottom: 16 }}>
                 <Search
                     placeholder="Search by company name"
@@ -367,7 +367,7 @@ function Companies() {
 
             <Modal
                 title="Add Company"
-                visible={isAddCompanyVisible}
+                open={isAddCompanyVisible}
                 onCancel={toggleAddCompanyForm}
                 footer={null}
             >

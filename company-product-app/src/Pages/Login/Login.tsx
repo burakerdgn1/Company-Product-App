@@ -1,7 +1,13 @@
 import React, { useState } from "react";
+import {useNavigate} from 'react-router-dom';
 import './Login.css';
 
-function Login() {
+interface LoginProps{
+  setIsLoggedIn:(isLoggedIn:boolean)=>void;
+}
+
+function Login({setIsLoggedIn}:LoginProps) {
+  const navigate=useNavigate();
   const [formData,setFormData]=useState({
     username:'',
     password:''
@@ -18,20 +24,22 @@ function Login() {
   const handleLogin = (e:React.FormEvent) => {
     e.preventDefault();
 
+
     if (!formData.username || !formData.password) {
       setErrorMessage('Please enter both username and password.');
       return;
     }
 
-    if (formData.username.length < 6 || formData.password.length > 12) {
+    if (formData.username.length < 6 || formData.password.length<6|| formData.password.length > 12) {
       setErrorMessage('Username must be between 6 and 12 characters.');
       return;
     }
 
-    if (formData.username.length < 6 || formData.password.length > 12) {
-      setErrorMessage('Password must be between 6 and 12 characters.');
-      return;
+    else{
+      setIsLoggedIn(true);
+      navigate('/');
     }
+
 
   }
 
@@ -43,11 +51,13 @@ function Login() {
         <input className="login-input"
           type="text"
           placeholder="Username"
+          name="username"
           defaultValue={formData.username}
           onChange={handleChange}
         />
         <input className="login-input"
           type="password"
+          name="password"
           placeholder="Password"
           defaultValue={formData.password}
           onChange={handleChange}
@@ -55,7 +65,7 @@ function Login() {
         <button className="login-button" type="submit">Login</button>
         <br />
         <br />
-        <button className="register-button" type="button">Register</button>
+        <button className="register-button" type="button" onClick={()=>navigate("/register")} >Register</button>
       </form>
     </div>
   );

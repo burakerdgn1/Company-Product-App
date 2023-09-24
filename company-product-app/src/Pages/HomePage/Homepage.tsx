@@ -1,18 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-redeclare */
-import React from "react";
-import Company from '../Companies/Companies';
-import Companies from '../Companies/Companies';
-import Product from '../Products/Products';
-import Products from '../Products/Products';
+import React, { useState,useEffect } from "react";
 import { Card, Statistic, List } from "antd";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import { Link,Route,Routes} from "react-router-dom";
 
 
 interface Company {
-    key: string;
+    _id: string;
     companyName: string;
     legalNumber: string;
     country: string;
@@ -20,7 +15,7 @@ interface Company {
 
 }
 interface Product {
-    key: string;
+    _id: string;
     productName: string;
     productCategory: string;
     productAmount: number;
@@ -28,15 +23,28 @@ interface Product {
     company: string;
 }
 
-interface HomePageProps {
-    companies: Company[];
-    products: Product[];
-}
 
 
-function Homepage({ companies, products }: HomePageProps) {
+
+function Homepage() {
+    const [companies, setCompanies] = useState<Company[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        fetch('http://localhost:3000/api/companies')
+            .then(response => response.json())
+            .then(data => setCompanies(data))
+            .catch(error => console.error('Error fetching companies:', error));
+
+        fetch('http://localhost:3000/api/products')
+            .then(response => response.json())
+            .then(data => setProducts(data))
+            .catch(error => console.error('Error fetching products:', error));
+    }, []);
+
+
+
     const companyDistribution: any = {};
-    const totalProducts = products.length;
     companies.forEach((company) => {
         const country = company.country;
         if (companyDistribution[country]) {
@@ -55,20 +63,20 @@ function Homepage({ companies, products }: HomePageProps) {
         ],
     };
 
-    const productDistributionByCountry: any = {};
+    const productDistributionByCompany: any = {};
     products.forEach((product) => {
-        const country = product.company;
-        if (productDistributionByCountry[country]) {
-            productDistributionByCountry[country]++;
+        const company = product.company;
+        if (productDistributionByCompany[company]) {
+            productDistributionByCompany[company]++;
         } else {
-            productDistributionByCountry[country] = 1;
+            productDistributionByCompany[company] = 1;
         }
     });
-    const barChartDataByCountry = {
-        labels: Object.keys(productDistributionByCountry).map((country) => country || 'Unknown'), // Country names
+    const barChartDataByCompany = {
+        labels: Object.keys(productDistributionByCompany).map((company) => company || 'Unknown'), 
         datasets: [
             {
-                data: Object.values(productDistributionByCountry), // Product counts by country
+                data: Object.values(productDistributionByCompany), 
             },
         ],
     };
@@ -94,10 +102,6 @@ function Homepage({ companies, products }: HomePageProps) {
 
 
 
-    const totalCompanies = companies.length;
-    const latestCompanies = companies.slice(0, 3);
-
-
 
 
     return (
@@ -105,18 +109,18 @@ function Homepage({ companies, products }: HomePageProps) {
             <h1>Welcome to The Dashboard</h1>
 
             <Card>
-                <Statistic title="Total Companies" value={totalCompanies} />
+                <Statistic title="Total Companies" value={companies.length} />
             </Card>
 
             <Card title="Total Products">
-                <Statistic title="Total Products" value={totalProducts} />
+                <Statistic title="Total Products" value={products.length} />
             </Card>
 
 
 
             <Card title="Latest Added Companies">
                 <List
-                    dataSource={latestCompanies}
+                    dataSource={companies.slice(0,3)}
                     renderItem={(company: Company) => (
                         <List.Item>
                             <a href="#">{company.companyName}</a>
@@ -125,9 +129,9 @@ function Homepage({ companies, products }: HomePageProps) {
                 />
             </Card>
 
-            <h2>Product Distribution by Country</h2>
+            <h2>Product Distribution by Company</h2>
             <Bar
-                data={barChartDataByCountry}
+                data={barChartDataByCompany}
                 options={{
                     scales: {
                         
@@ -174,9 +178,6 @@ function Homepage({ companies, products }: HomePageProps) {
                             }
                         },
                     },
-                    
-                    
-                    
                     
                 }}
             />

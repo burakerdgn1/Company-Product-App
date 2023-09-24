@@ -2,11 +2,12 @@
 import './App.css';
 import React, { useState } from 'react';
 import Homepage from './Pages/HomePage/Homepage';
-import Companies, { dummyCompanies } from './Pages/Companies/Companies';
-import Products, { dummyProducts } from './Pages/Products/Products';
-import { Route, BrowserRouter as Router, Routes, Link, useNavigate } from "react-router-dom";
+import { Route, Routes, Link, useNavigate } from "react-router-dom";
 import Login from './Pages/Login/Login';
 import Register from './Pages/Register/Register';
+import Companies from './Pages/Companies/Companies';
+import Products from './Pages/Products/Products';
+
 
 interface AppProps {
   name: string;
@@ -50,7 +51,7 @@ function App(props: AppProps) {
 
         <Route
           path="/"
-          element={isLoggedIn ? <Homepage companies={dummyCompanies} products={dummyProducts} /> : <Login setIsLoggedIn={setIsLoggedIn} />}
+          element={isLoggedIn ? <Homepage /> : <Login setIsLoggedIn={setIsLoggedIn} />}
         />
         <Route path="/companies" element={<Companies />} />
         <Route path="/products" element={<Products />} />

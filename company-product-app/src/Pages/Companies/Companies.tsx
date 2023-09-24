@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Button, Input, Form, Space, Modal } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 //import { FilterDropdownProps } from 'antd/es/table/interface';
@@ -8,7 +8,7 @@ const { Column } = Table;
 const { Search } = Input;
 const { confirm } = Modal;
 interface Company {
-    key: string;
+    _id: string;
     companyName: string;
     legalNumber: string;
     country: string;
@@ -16,83 +16,30 @@ interface Company {
 }
 
 
-//dummy data
-export const dummyCompanies:Company[] = [
-    {
-        key: '1',
-        companyName: 'A',
-        legalNumber: '12345',
-        country: 'CountryA',
-        website: 'www.companya.com',
-    },
-    {
-        key: '2',
-        companyName: 'B',
-        legalNumber: '67890',
-        country: 'CountryB',
-        website: 'www.companyb.com',
-    },
-    {
-        key: '3',
-        companyName: 'C',
-        legalNumber: '12345',
-        country: 'CountryC',
-        website: 'www.companyc.com',
-    },
-    {
-        key: '4',
-        companyName: 'D',
-        legalNumber: '67890',
-        country: 'CountryD',
-        website: 'www.companyb.com',
-    },
-    {
-        key: '5',
-        companyName: 'E',
-        legalNumber: '12345',
-        country: 'CountryE',
-        website: 'www.companya.com',
-    },
-    {
-        key: '6',
-        companyName: 'F',
-        legalNumber: '67890',
-        country: 'CountryA',
-        website: 'www.companyb.com',
-    },
-    {
-        key: '7',
-        companyName: 'G',
-        legalNumber: '12345',
-        country: 'CountryA',
-        website: 'www.companya.com',
-    },
-    {
-        key: '8',
-        companyName: 'H',
-        legalNumber: '67890',
-        country: 'CountryC',
-        website: 'www.companyb.com',
-    },
-    {
-        key: '9',
-        companyName: 'I',
-        legalNumber: '12345',
-        country: 'CountryB',
-        website: 'www.companya.com',
-    },
-    
-   
-];
 
 function Companies() {
-   
 
-    const [companies, setCompanies] = useState<Company[]>(dummyCompanies);
+
+    const [companies, setCompanies] = useState<Company[]>([]);
     const [searchText, setSearchText] = useState<string>('');
     const [searchedColumn, setSearchedColumn] = useState<string>('');
 
     const [isAddCompanyVisible, setIsAddCompanyVisible] = useState(false);
+    const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+
+
+    useEffect(() => {
+        fetch('http://localhost:3000/api/companies')
+            .then(
+                
+                (response) =>{
+                    if(!response.ok){
+                        throw new Error('Network response was not ok')
+                    }
+                     return response.json()})
+            .then((data) => setCompanies(data))
+            .catch((error) => console.error('Error fetching companies:', error));
+    }, []);
 
     const toggleAddCompanyForm = () => {
         setIsAddCompanyVisible(!isAddCompanyVisible);
@@ -105,33 +52,50 @@ function Companies() {
 
     const [form] = Form.useForm();
 
-    const handleAddCompany = (values: any) => {
+    const handleAddCompany = (values: Company) => {
         form
             .validateFields()
             .then((values) => {
-                const newCompany = {
-                    key: (companies.length + 1).toString(),
-                    ...values,
-                };
-                setCompanies([...companies, newCompany]);
-                form.resetFields();
-                setIsAddCompanyVisible(false);
+                fetch('http://localhost:3000/api/companies', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(values),
+                })
+                    .then((response) => response.json())
+                    .then((newCompany) => {
+                        setCompanies([...companies, newCompany]);
+                        form.resetFields();
+                        setIsAddCompanyVisible(false);
+                    })
+                    .catch((error) => console.error('Error adding company:', error));
             })
             .catch((errorInfo) => {
                 console.log('Validation failed:', errorInfo);
             });
     };
 
-    const [editingCompany, setEditingCompany] = useState<Company | null>(null);
 
-    const handleEditCompany = (values: any) => {
+    const handleEditCompany = (values: Company) => {
         if (editingCompany) {
-            const updatedCompanies = companies.map((company) =>
-                company.key === editingCompany.key ? { ...company, ...values } : company
-            );
-            setCompanies(updatedCompanies);
-            setEditingCompany(null);
-            form.resetFields();
+            fetch(`http://localhost:3000/api/companies/${editingCompany._id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values),
+            })
+                .then((response) => response.json())
+                .then((updatedCompany) => {
+                    const updatedCompanies = companies.map((company) =>
+                        company._id === updatedCompany._id ? updatedCompany : company
+                    );
+                    setCompanies(updatedCompanies);
+                    setEditingCompany(null);
+                    form.resetFields();
+                })
+                .catch((error) => console.error('Error updating company:', error));
 
         }
 
@@ -145,7 +109,7 @@ function Companies() {
             okType: 'danger',
             cancelText: 'No',
             onOk() {
-                handleDeleteCompany(record.key);
+                handleDeleteCompany(record._id);
             },
             onCancel() {
                 console.log('Cancel');
@@ -153,9 +117,15 @@ function Companies() {
         });
     };
 
-    const handleDeleteCompany = (key: string) => {
-        const updatedCompanies = companies.filter((company) => company.key !== key);
-        setCompanies(updatedCompanies);
+    const handleDeleteCompany = (companyId:any) => {
+        fetch(`http://localhost:3000/api/companies/${companyId}`, {
+            method: 'DELETE',
+        })
+            .then(() => {
+                const updatedCompanies = companies.filter((company) => company._id !== companyId);
+                setCompanies(updatedCompanies);
+            })
+            .catch((error) => console.error('Error deleting company:', error));
     };
 
     const handleSearch = (selectedKeys: string[] | null, confirm: (() => void) | null, dataIndex: string) => {
@@ -233,7 +203,7 @@ function Companies() {
 
 
     return (
-        <div>
+        <div key="companies">
             <h1>Companies</h1>
             {/* <Space style={{ marginBottom: 16 }}>
                 <Search
@@ -246,17 +216,17 @@ function Companies() {
             <Button type="primary" icon={<PlusOutlined />} onClick={toggleAddCompanyForm}>
                 Add Company
             </Button>
-            <Table dataSource={companies} size="middle" bordered>
+            <Table dataSource={companies} size="middle" bordered key="companies">
                 <Column
                     title="Company Name"
                     dataIndex="companyName"
                     key="companyName"
+                /> 
+                {/* //will be checked later
 
-                //will be checked later
-
-                // filterDropdown={(props: FilterDropdownProps) =>
-                //     companyNameColumnSearchProps.filterDropdown({
-                //         ...props,
+                // filterDropdown={(props: FilterDropdownProps) => */}
+                {/* //     companyNameColumnSearchProps.filterDropdown({ */}
+                {/* //         ...props,
                 //         setSelectedKeys: props.setSelectedKeys as (selectedKeys: string[]) => void,
                 //         selectedKeys: props.selectedKeys as string[],
                 //         confirm: props.confirm as () => void,
@@ -265,8 +235,8 @@ function Companies() {
                 // }
                 // filterIcon={companyNameColumnSearchProps.filterIcon}
                 // onFilter={companyNameColumnSearchProps.onFilter}
-                // render={companyNameColumnSearchProps.render}
-                />
+                // render={companyNameColumnSearchProps.render} */}
+                
                 <Column title="Legal Number" dataIndex="legalNumber" key="legalNumber" />
                 <Column title="Incorporation Country" dataIndex="country" key="country" />
                 <Column title="Website" dataIndex="website" key="website" />
@@ -294,17 +264,14 @@ function Companies() {
                 />
             </Table>
 
-
-
-
-
-            {/* Edit Company Form */}
+            
             {editingCompany !== null && (
                 <>
                     <h3>{editingCompany ? 'Edit' : 'Add'} Company</h3>
                     <Form form={form} onFinish={editingCompany ? handleEditCompany : handleAddCompany}>
                         <Form.Item
                             name="companyName"
+                            key="companyName"
                             label="Company Name"
                             initialValue={editingCompany ? editingCompany.companyName : ''}
                             rules={[
@@ -319,6 +286,7 @@ function Companies() {
 
                         <Form.Item
                             name="legalNumber"
+                            key="legalNumber"
                             label="Legal Number"
                             rules={[{ required: true, message: 'Please enter the legal number' }]}
                             initialValue={editingCompany ? editingCompany.legalNumber : ''}
@@ -328,6 +296,7 @@ function Companies() {
 
                         <Form.Item
                             name="country"
+                            key="country"
                             label="Incorporation Country"
                             rules={[{ required: true, message: 'Please enter the incorporation country' }]}
                             initialValue={editingCompany ? editingCompany.country : ''}
@@ -339,6 +308,7 @@ function Companies() {
 
                         <Form.Item
                             name="website"
+                            key="website"
                             label="Website"
                             rules={[
                                 {
@@ -356,7 +326,7 @@ function Companies() {
                             <Input placeholder="Website" />
                         </Form.Item>
 
-                        <Form.Item>
+                        <Form.Item key="save-edit">
                             <Button type="primary" htmlType="submit">
                                 {editingCompany ? 'Save' : 'Add'}
                             </Button>
@@ -374,6 +344,7 @@ function Companies() {
                 <Form form={form} {...formLayout}>
                     <Form.Item
                         name="companyName"
+                        key="companyName"
                         label="Company Name"
                         rules={[
                             {
@@ -387,6 +358,7 @@ function Companies() {
 
                     <Form.Item
                         name="legalNumber"
+                        key="legalNumber"
                         label="Legal Number"
                         rules={[
                             {
@@ -400,6 +372,7 @@ function Companies() {
 
                     <Form.Item
                         name="country"
+                        key="country"
                         label="Incorporation Country"
                         rules={[
                             {
@@ -414,6 +387,7 @@ function Companies() {
                     <Form.Item
                         name="website"
                         label="Website"
+                        key="website"
                         rules={[
                             {
                                 required: true,
@@ -428,10 +402,10 @@ function Companies() {
                         <Input placeholder="Website" />
                     </Form.Item>
 
-                    <Form.Item wrapperCol={{ ...formLayout.wrapperCol, offset: 6 }}>
+                    <Form.Item key="add" wrapperCol={{ ...formLayout.wrapperCol, offset: 6 }}>
                         <Space>
                             <Button onClick={toggleAddCompanyForm}>Cancel</Button>
-                            <Button type="primary" onClick={handleAddCompany}>
+                            <Button type="primary" onClick={() => handleAddCompany(form.getFieldsValue())}>
                                 Add
                             </Button>
                         </Space>

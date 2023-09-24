@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Button, Input, Form, Space, Modal, Select } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 const { Column } = Table;
@@ -8,57 +8,10 @@ const { confirm } = Modal;
 const { Option } = Select;
 
 export const dummyProducts = [
-    {
-        key: '1',
-        productName: 'Product A',
-        productCategory: 'CategoryA',
-        productAmount: 100,
-        amountUnit: 'kg',
-        company: 'A',
-    },
-    {
-        key: '2',
-        productName: 'Product B',
-        productCategory: 'CategoryB',
-        productAmount: 50,
-        amountUnit: 'pieces',
-        company: 'B',
-    },
-    {
-        key: '3',
-        productName: 'Product C',
-        productCategory: 'CategoryC',
-        productAmount: 100,
-        amountUnit: 'kg',
-        company: 'C',
-    },
-    {
-        key: '4',
-        productName: 'Product D',
-        productCategory: 'CategoryD',
-        productAmount: 50,
-        amountUnit: 'pieces',
-        company: 'D',
-    },
-    {
-        key: '5',
-        productName: 'Product E',
-        productCategory: 'CategoryA',
-        productAmount: 100,
-        amountUnit: 'kg',
-        company: 'A',
-    },
-    {
-        key: '6',
-        productName: 'Product F',
-        productCategory: 'CategoryB',
-        productAmount: 50,
-        amountUnit: 'pieces',
-        company: 'B',
-    },
+    
 ];
 interface Product {
-    key: string;
+    _id: string;
     productName: string;
     productCategory: string;
     productAmount: number;
@@ -70,16 +23,18 @@ interface Product {
 
 function Products() {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
-    
-
-
-
     const [products, setProducts] = useState<Product[]>(dummyProducts);
     const [searchText, setSearchText] = useState<string>('');
     const [searchedColumn, setSearchedColumn] = useState<string>('');
     const [form] = Form.useForm();
     const [isAddProductVisible, setIsAddProductVisible] = useState(false);
+
+    useEffect(() => {
+        fetch('http://localhost:3000/api/products')
+            .then(response => response.json())
+            .then(data => setProducts(data))
+            .catch(error => console.error('Error fetching products:', error));
+    }, []);
 
     const showDeleteConfirm = (record: Product) => {
         confirm({
@@ -89,7 +44,7 @@ function Products() {
             okType: 'danger',
             cancelText: 'No',
             onOk() {
-                handleDeleteProduct(record.key);
+                handleDeleteProduct(record._id);
             },
             onCancel() {
                 console.log('Cancel');
@@ -97,35 +52,60 @@ function Products() {
         });
     };
 
-    const handleDeleteProduct = (key: string) => {
-        const updatedProducts = products.filter((product) => product.key !== key);
-        setProducts(updatedProducts);
+    const handleDeleteProduct = (productId: string) => {
+        fetch(`http://localhost:3000/api/products/${productId}`, {
+            method: 'DELETE',
+        })
+            .then(() => {
+                const updatedProducts = products.filter(product => product._id !== productId);
+                setProducts(updatedProducts);
+            })
+            .catch(error => console.error('Error deleting product:', error));
     };
 
-    const handleEditProduct = (values: any) => {
+    const handleEditProduct = (values: Product) => {
         if (editingProduct) {
-            const updatedProducts = products.map((product) =>
-                product.key === editingProduct.key ? { ...product, ...values } : product
-            );
-            setProducts(updatedProducts);
-            setEditingProduct(null);
-            form.resetFields();
+            fetch(`http://localhost:3000/api/products/${editingProduct._id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values),
+            })
+                .then(response => response.json())
+                .then(updatedProduct => {
+                    const updatedProducts = products.map(product =>
+                        product._id === updatedProduct._id ? updatedProduct : product
+                    );
+                    setProducts(updatedProducts);
+                    setEditingProduct(null);
+                    form.resetFields();
+                })
+                .catch(error => console.error('Error updating product:', error));
         }
     };
 
     const handleAddProduct = () => {
         form
             .validateFields()
-            .then((values) => {
-                const newProduct = {
-                    key: (products.length + 1).toString(),
-                    ...values,
-                };
-                setProducts([...products, newProduct]);
-                form.resetFields();
-                setIsAddProductVisible(false);
+            .then(values => {
+                // Send a POST request to add the new product to the server
+                fetch('http://localhost:3000/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(values),
+                })
+                    .then(response => response.json())
+                    .then(newProduct => {
+                        setProducts([...products, newProduct]);
+                        form.resetFields();
+                        setIsAddProductVisible(false);
+                    })
+                    .catch(error => console.error('Error adding product:', error));
             })
-            .catch((errorInfo) => {
+            .catch(errorInfo => {
                 console.log('Validation failed:', errorInfo);
             });
 

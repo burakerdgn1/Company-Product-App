@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Table, Button, Input, Form, Space, Modal, Select } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import './Products.css';
+
 const { Column } = Table;
-const { Search } = Input;
 const { confirm } = Modal;
 const { Option } = Select;
 
-export const dummyProducts = [
-    
-];
+
+
 interface Product {
     _id: string;
     productName: string;
@@ -19,13 +19,9 @@ interface Product {
     company: string;
 }
 
-
-
 function Products() {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    const [products, setProducts] = useState<Product[]>(dummyProducts);
-    const [searchText, setSearchText] = useState<string>('');
-    const [searchedColumn, setSearchedColumn] = useState<string>('');
+    const [products, setProducts] = useState<Product[]>([]);
     const [form] = Form.useForm();
     const [isAddProductVisible, setIsAddProductVisible] = useState(false);
 
@@ -89,7 +85,6 @@ function Products() {
         form
             .validateFields()
             .then(values => {
-                // Send a POST request to add the new product to the server
                 fetch('http://localhost:3000/api/products', {
                     method: 'POST',
                     headers: {
@@ -123,13 +118,13 @@ function Products() {
 
 
     return (
-        <div>
-            <h1>Products</h1>
-            <Button type="primary" icon={<PlusOutlined />} onClick={toggleAddProductForm}>
+        <div className="products-container">
+            <h1 className="products-header">Products</h1>
+            <Button type="primary" className="add-product-button" icon={<PlusOutlined />} onClick={toggleAddProductForm}>
                 Add Product
             </Button>
 
-            <Table dataSource={products} size="middle" bordered>
+            <Table dataSource={products} size="middle" bordered className="product-table">
                 <Column title="Product Name" dataIndex="productName" key="productName" />
                 <Column title="Product Category" dataIndex="productCategory" key="productCategory" />
                 <Column title="Product Amount" dataIndex="productAmount" key="productAmount" />
@@ -160,7 +155,9 @@ function Products() {
             </Table>
 
             {editingProduct != null && (
-                <>
+                <div className="add-edit-form">
+                    <h3 className="form-title">{editingProduct ? 'Edit' : 'Add'} Product</h3>
+
                     <Form form={form} onFinish={editingProduct ? handleEditProduct : handleAddProduct}>
                         <Form.Item
                             name="productName"
@@ -171,6 +168,7 @@ function Products() {
                                     message: 'Please enter the product name',
                                 },
                             ]}
+                            className="form-input"
                             initialValue={editingProduct ? editingProduct.productName : ''}
                         >
                             <Input placeholder="Product Name" />
@@ -187,6 +185,8 @@ function Products() {
                                     message: 'Please enter the product category',
                                 },
                             ]}
+                            className="form-input"
+
                             initialValue={editingProduct ? editingProduct.productCategory : ''}
                         >
                             <Input placeholder="Product Category" />
@@ -201,6 +201,8 @@ function Products() {
                                     message: 'Please enter the product amount',
                                 },
                             ]}
+                            className="form-input"
+
                             initialValue={editingProduct ? editingProduct.productAmount : ''}
                         >
                             <Input type="number" placeholder="Product Amount" />
@@ -215,6 +217,8 @@ function Products() {
                                     message: 'Please enter the amount unit',
                                 },
                             ]}
+                            className="form-input"
+
                             initialValue={editingProduct ? editingProduct.amountUnit : ''}
                         >
                             <Input placeholder="Amount Unit" />
@@ -229,6 +233,8 @@ function Products() {
                                     message: 'Please select the company',
                                 },
                             ]}
+                            className="form-input"
+
                             initialValue={editingProduct ? editingProduct.company : undefined}
                         >
                             <Select placeholder="Select a company">
@@ -240,7 +246,7 @@ function Products() {
                             </Select>
                         </Form.Item>
 
-                        <Form.Item>
+                        <Form.Item key="save-edit" className="form-button">
                             <Button type="primary" htmlType="submit">
                                 {editingProduct ? 'Save' : 'Add'}
                             </Button>
@@ -248,7 +254,7 @@ function Products() {
 
                     </Form>
 
-                </>
+                </div>
             )}
 
             <Modal title="Add Product"
@@ -296,8 +302,6 @@ function Products() {
                     </Form.Item>
 
 
-
-
                     <Form.Item
                         name="amountUnit"
                         label="Amount Unit"
@@ -322,7 +326,7 @@ function Products() {
                         ]}
                     >
                         <Select placeholder="Select a company">
-                            {companyOptions[0].map((company,index) => (
+                            {companyOptions[0].map((company, index) => (
                                 <Option key={index.toString()} value={company}>
                                     {company}
                                 </Option>
@@ -342,11 +346,6 @@ function Products() {
 
 
             </Modal>
-
-
-
-
-
 
 
         </div>

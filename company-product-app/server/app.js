@@ -6,6 +6,8 @@ const app = express();
 
 const companyRoutes = require('./routes/companyRoutes');
 const productRoutes = require('./routes/productRoutes');
+const userRouter = require('./routes/userRouter');
+const authRouter = require('./routes/authRouter');
 
 const corsOptions = {
     origin: 'http://localhost:3001',
@@ -34,6 +36,12 @@ app.get('/', (req, res) => {
 
 app.use('/api', companyRoutes);
 app.use('/api', productRoutes);
+app.use('/api/users', userRouter);
+app.use('/api', authRouter);
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Internal Server Error' });
+  });
 
 
 const port = 3000;

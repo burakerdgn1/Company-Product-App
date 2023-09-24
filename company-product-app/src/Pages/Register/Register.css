@@ -25,8 +25,7 @@
  
   }
   
-  .register-button {
-    display:flex;
+  .reg-button , .login-button{
     width: 100%;
     padding: 10px;
     background-color: #007bff;
@@ -34,8 +33,9 @@
     border: none;
     border-radius: 3px;
     cursor: pointer;
+    text-align: center;
   }
   
-  .register-button:hover {
+  .reg-button:hover {
     background-color: #0056b3;
   }

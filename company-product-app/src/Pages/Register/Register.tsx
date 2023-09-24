@@ -21,7 +21,7 @@ function Register() {
     });
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.username || !formData.password || !formData.confirmPassword) {
@@ -44,7 +44,24 @@ function Register() {
       return;
     }
 
-    navigate('/login');
+    try {
+      const response = await fetch('http://localhost:3000/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        navigate('/login'); // Redirect to login page after successful registration
+      } else {
+        setErrorMessage('Registration failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setErrorMessage('An error occurred during registration.');
+    }
     
   };
 
@@ -77,9 +94,11 @@ function Register() {
           value={formData.confirmPassword}
           onChange={handleChange}
         />
-        <button type="submit" className="register-button">
+        <button type="submit" className="reg-button">
           Register
         </button>
+        <br />
+        <br />
         <button type="button" className="login-button" onClick={()=>navigate('/login',{replace:true})}>
           Login Page
         </button>

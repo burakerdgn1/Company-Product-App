@@ -1,0 +1,39 @@
+.homepage-container {
+    padding: 20px;
+  }
+  
+  .homepage-header {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .statistic-card {
+    margin-bottom: 20px;
+  }
+  
+  .latest-companies-card {
+    margin-bottom: 20px;
+  }
+  
+  .latest-companies-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .latest-companies-list-item {
+    margin-bottom: 10px;
+  }
+  
+  .chart-title {
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .chart {
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    background-color: #fff;
+    margin-bottom: 20px;
+  }

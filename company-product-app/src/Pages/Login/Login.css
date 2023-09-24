@@ -25,7 +25,7 @@
  
   }
   
-  .login-button, .register-button {
+  .log-button,.register-button {
     display:flexbox;
     width: 100%;
     padding: 10px;
@@ -34,6 +34,7 @@
     border: none;
     border-radius: 3px;
     cursor: pointer;
+    text-align: center;
   }
   
   .login-button:hover {

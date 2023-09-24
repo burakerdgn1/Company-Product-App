@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Input, Form, Space, Modal } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import './Companies.css';
 //import { FilterDropdownProps } from 'antd/es/table/interface';
 
 const { Column } = Table;
@@ -141,101 +142,23 @@ function Companies() {
         setSearchText('');
     };
 
-    // interface CustomFilterDropdownProps {
-    //     setSelectedKeys: (selectedKeys: React.Key[]) => void;
-    //     selectedKeys: React.Key[];
-    //     confirm: () => void;
-    //     clearFilters: () => void;
-    //   }
-
-    // const getColumnSearchProps = (
-    //     dataIndex: string
-    //   ): {
-    //     filterDropdown: (props: CustomFilterDropdownProps) => React.ReactNode;
-    //     filterIcon: (filtered: boolean) => React.ReactNode;
-    //     onFilter: (value: string, record: Company) => boolean;
-    //     render: (text: string) => React.ReactNode;
-    //   } => ({
-    //     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: CustomFilterDropdownProps) => (
-    //       <div style={{ padding: 8 }}>
-    //         <Input
-    //           placeholder={`Search ${dataIndex}`}
-    //           value={selectedKeys[0] as string}
-    //           onChange={(e) => setSelectedKeys([e.target.value])}
-    //           onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-    //           style={{ width: 188, marginBottom: 8, display: 'block' }}
-    //         />
-    //         <Space>
-    //           <Button
-    //             type="primary"
-    //             onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-    //             icon={<SearchOutlined />}
-    //             size="small"
-    //             style={{ width: 90 }}
-    //           >
-    //             Search
-    //           </Button>
-    //           <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-    //             Reset
-    //           </Button>
-    //         </Space>
-    //       </div>
-    //     ),
-    //     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    //     onFilter: (value: string, record: Company) =>
-    //       record[dataIndex as keyof Company]
-    //         ? record[dataIndex as keyof Company].toString().toLowerCase().includes(value.toLowerCase())
-    //         : false,
-    //     render: (text: string) =>
-    //       searchedColumn === dataIndex ? (
-    //         <Button type="link" onClick={() => handleSearch(null, null, dataIndex)}>
-    //           {text}
-    //         </Button>
-    //       ) : (
-    //         text
-    //       ),
-    //   });
-
-    // const companyNameColumnSearchProps = getColumnSearchProps('companyName');
-
-
     const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)?([\w-]+\/?)*\??([\w-]+=[\w-]*(\&[\w-]+=[\w-]*)*)?$/;
 
 
     return (
-        <div key="companies">
-            <h1>Companies</h1>
-            {/* <Space style={{ marginBottom: 16 }}>
-                <Search
-                    placeholder="Search by company name"
-                    allowClear
-                    enterButton
-                    onSearch={(value) => setSearchText(value)}
-                />
-            </Space> */}
+        <div className='companies-container'>
+            <h1 className='companies-header'>Companies</h1>
+            
             <Button type="primary" icon={<PlusOutlined />} onClick={toggleAddCompanyForm}>
                 Add Company
             </Button>
-            <Table dataSource={companies} size="middle" bordered key="companies">
+            <Table dataSource={companies} size="middle" bordered key="companies" className='company-table'>
                 <Column
                     title="Company Name"
                     dataIndex="companyName"
                     key="companyName"
                 /> 
-                {/* //will be checked later
-
-                // filterDropdown={(props: FilterDropdownProps) => */}
-                {/* //     companyNameColumnSearchProps.filterDropdown({ */}
-                {/* //         ...props,
-                //         setSelectedKeys: props.setSelectedKeys as (selectedKeys: string[]) => void,
-                //         selectedKeys: props.selectedKeys as string[],
-                //         confirm: props.confirm as () => void,
-                //         clearFilters: props.clearFilters as () => void,
-                //     })
-                // }
-                // filterIcon={companyNameColumnSearchProps.filterIcon}
-                // onFilter={companyNameColumnSearchProps.onFilter}
-                // render={companyNameColumnSearchProps.render} */}
+               
                 
                 <Column title="Legal Number" dataIndex="legalNumber" key="legalNumber" />
                 <Column title="Incorporation Country" dataIndex="country" key="country" />
@@ -266,13 +189,14 @@ function Companies() {
 
             
             {editingCompany !== null && (
-                <>
-                    <h3>{editingCompany ? 'Edit' : 'Add'} Company</h3>
+                <div className='add-edit-form'>
+                    <h3 className='form-title'>{editingCompany ? 'Edit' : 'Add'} Company</h3>
                     <Form form={form} onFinish={editingCompany ? handleEditCompany : handleAddCompany}>
                         <Form.Item
                             name="companyName"
                             key="companyName"
                             label="Company Name"
+                            className='form-input'
                             initialValue={editingCompany ? editingCompany.companyName : ''}
                             rules={[
                                 {
@@ -288,6 +212,8 @@ function Companies() {
                             name="legalNumber"
                             key="legalNumber"
                             label="Legal Number"
+                            className='form-input'
+
                             rules={[{ required: true, message: 'Please enter the legal number' }]}
                             initialValue={editingCompany ? editingCompany.legalNumber : ''}
                         >
@@ -298,6 +224,8 @@ function Companies() {
                             name="country"
                             key="country"
                             label="Incorporation Country"
+                            className='form-input'
+
                             rules={[{ required: true, message: 'Please enter the incorporation country' }]}
                             initialValue={editingCompany ? editingCompany.country : ''}
                         >
@@ -310,6 +238,8 @@ function Companies() {
                             name="website"
                             key="website"
                             label="Website"
+                            className='form-input'
+
                             rules={[
                                 {
                                     required: true,
@@ -326,13 +256,13 @@ function Companies() {
                             <Input placeholder="Website" />
                         </Form.Item>
 
-                        <Form.Item key="save-edit">
+                        <Form.Item key="save-edit" className='form-button'>
                             <Button type="primary" htmlType="submit">
                                 {editingCompany ? 'Save' : 'Add'}
                             </Button>
                         </Form.Item>
                     </Form>
-                </>
+                </div>
             )}
 
             <Modal

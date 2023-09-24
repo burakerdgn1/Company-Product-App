@@ -21,7 +21,7 @@ function Login({setIsLoggedIn}:LoginProps) {
       [name]:value,
     });
   }
-  const handleLogin = (e:React.FormEvent) => {
+  const handleLogin = async (e:React.FormEvent) => {
     e.preventDefault();
 
 
@@ -36,8 +36,27 @@ function Login({setIsLoggedIn}:LoginProps) {
     }
 
     else{
-      setIsLoggedIn(true);
-      navigate('/');
+      try {
+        const response = await fetch('http://localhost:3000/api/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('secret-key', data.token); // Store the JWT token in local storage
+          setIsLoggedIn(true);
+          navigate('/');
+        } else {
+          setErrorMessage('Invalid username or password.');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        setErrorMessage('An error occurred while logging in.');
+      }
     }
 
 
@@ -62,7 +81,7 @@ function Login({setIsLoggedIn}:LoginProps) {
           defaultValue={formData.password}
           onChange={handleChange}
         />
-        <button className="login-button" type="submit">Login</button>
+        <button className="log-button" type="submit">Login</button>
         <br />
         <br />
         <button className="register-button" type="button" onClick={()=>navigate("/register")} >Register</button>

@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-redeclare */
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Statistic, List } from "antd";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-
+import './Homepage.css';
 
 interface Company {
     _id: string;
@@ -22,9 +22,6 @@ interface Product {
     amountUnit: string;
     company: string;
 }
-
-
-
 
 function Homepage() {
     const [companies, setCompanies] = useState<Company[]>([]);
@@ -73,10 +70,10 @@ function Homepage() {
         }
     });
     const barChartDataByCompany = {
-        labels: Object.keys(productDistributionByCompany).map((company) => company || 'Unknown'), 
+        labels: Object.keys(productDistributionByCompany).map((company) => company || 'Unknown'),
         datasets: [
             {
-                data: Object.values(productDistributionByCompany), 
+                data: Object.values(productDistributionByCompany),
             },
         ],
     };
@@ -100,87 +97,97 @@ function Homepage() {
         ],
     };
 
-
-
-
-
     return (
-        <div>
-            <h1>Welcome to The Dashboard</h1>
+        <div className="homepage-container">
+            <h1 className="homepaage-header">Welcome to Dashboard</h1>
 
-            <Card>
+            <Card className="statistic-card">
                 <Statistic title="Total Companies" value={companies.length} />
             </Card>
 
-            <Card title="Total Products">
+            <Card className="statistic-card">
                 <Statistic title="Total Products" value={products.length} />
             </Card>
 
 
 
-            <Card title="Latest Added Companies">
+            <Card title="Latest Added Companies" className="latest-companies-card">
+                <ul className="latest-companies-list">
+
+                </ul>
                 <List
-                    dataSource={companies.slice(0,3)}
+                    dataSource={companies.slice(-3)}
                     renderItem={(company: Company) => (
-                        <List.Item>
-                            <a href="#">{company.companyName}</a>
+                        <List.Item className="latest-companies-list-item">
+                            {company.companyName}
                         </List.Item>
                     )}
                 />
             </Card>
 
-            <h2>Product Distribution by Company</h2>
-            <Bar
-                data={barChartDataByCompany}
-                options={{
-                    scales: {
-                        
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
+            <h2 className="chart-title">Product Distribution by Company</h2>
+            <div className="chart">
+                <Bar
+                    data={barChartDataByCompany}
+                    options={{
+                        scales: {
+
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                },
+
                             },
-                            
+
+
                         },
-                        
 
-                    },
-                   
-                    
-                }}
-            />
 
-            <h2>Product Distribution by Category</h2>
-            <Bar
-                data={barChartDataByCategory}
-                options={{
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
+                    }}
+                />
+            </div>
+
+
+            <h2 className="chart-title">Product Distribution by Category</h2>
+            <div className="chart">
+                <Bar
+                    data={barChartDataByCategory}
+                    options={{
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                },
                             },
                         },
-                    },
-                    
-                }}
-            />
 
-            <h2>Company Distribution by Country</h2>
-            <Bar
-                data={barChartData}
-                options={{
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
+                    }}
+                />
+
+            </div>
+
+
+            <h2 className="chart-title">Company Distribution by Country</h2>
+            <div className="chart">
+                <Bar
+                    data={barChartData}
+                    options={{
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            },
                         },
-                    },
-                    
-                }}
-            />
+
+                    }}
+                />
+
+            </div>
+
         </div>
     )
 

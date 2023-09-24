@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import './App.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Homepage from './Pages/HomePage/Homepage';
 import { Route, Routes, Link, useNavigate } from "react-router-dom";
 import Login from './Pages/Login/Login';
@@ -16,39 +16,46 @@ interface AppProps {
 
 function App(props: AppProps) {
   const navigate = useNavigate();
-  const handleLogout=()=>{
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const isLoggedInInStorage = localStorage.getItem('isLoggedIn');
+    return isLoggedInInStorage ? JSON.parse(isLoggedInInStorage) : false;
+
+  });
+
+  useEffect(() => {
+    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
+  }, [isLoggedIn]);
+
+  const handleLogout = () => {
     setIsLoggedIn(false);
+    localStorage.removeItem('isLoggedIn');
     navigate('/login');
-   }
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  }
+
   return (
 
     <div>
       <nav>
         <ul>
-          {
-            isLoggedIn ? <li>
-              <Link to="/">Home</Link>
-            </li> : null
-          }
-
-          {isLoggedIn ? <li>
-            <Link to="/companies">Companies</Link>
-          </li> : null}
-
-          {isLoggedIn ? <li>
-            <Link to="/products">Products</Link>
-          </li> : null}
-          {isLoggedIn ? (
-            <li>
-              <Link to="/login" onClick={handleLogout}></Link>
-              { <button onClick={() => navigate('/login')}>Logout</button> }
-            </li>
-          ) : null}
+          {isLoggedIn && (
+            <div>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/companies">Companies</Link>
+              </li>
+              <li>
+                <Link to="/products">Products</Link>
+              </li>
+              <li>
+                <button onClick={handleLogout}>Logout</button>
+              </li>
+            </div>
+          )}
         </ul>
       </nav>
       <Routes>
-
         <Route
           path="/"
           element={isLoggedIn ? <Homepage /> : <Login setIsLoggedIn={setIsLoggedIn} />}
@@ -58,10 +65,7 @@ function App(props: AppProps) {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />}></Route>
       </Routes>
-      </div>
-
-
-
+    </div>
 
   );
 }
